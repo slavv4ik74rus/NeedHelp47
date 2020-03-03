@@ -4,6 +4,8 @@
 #include <malloc.h>
 #pragma warning(disable : 4996) // чтобы могли использовать fopen
 
+
+
 int invmatrix(int n, double** a, double* b) {
     int i, j, k;
     double tmp;
@@ -29,19 +31,46 @@ int invmatrix(int n, double** a, double* b) {
         tmp = b[0]; b[0] = b[k]; b[k] = tmp;
     }
 
-
-
-
-    
     // Output
+    printf("\nПоменял местами строки %d и 0\n", k + 1);
     for (i = 0; i < n; i++) {
-        for (j = 0; j < n-1; j++) {
+        for (j = 0; j < n - 1; j++) {
             printf("%4.1lf ", a[i][j]);
         }
         printf("%4.1lf\n", b[i]);
     }
+    printf("\n\n");
+    for (j = 0; j < n - 1; j++) {
+        a[0][j] /= fabs(max);
+    }
+    b[0] /= fabs(max);
+
+    
+    // Output
+    printf("\nПоделил 0 строку на %.1lf\n", fabs(max));
+    for (i = 0; i < n; i++) {
+        for (j = 0; j < n-1; j++) {
+            printf("%5.2lf ", a[i][j]);
+        }
+        printf("%5.2lf\n", b[i]);
+    }
 
 
+    for (i = 1; i < n; i++) {
+        tmp = a[i][0];
+        for (j = 0; j < n - 1; j++) {
+            //printf("i=%d;j=%d;%5.2lf;%5.2lf;Итог:%5.2lf\n", i, j, fabs(a[0][j]), tmp, (fabs(a[0][j]) * tmp));
+            a[i][j] -= ((a[0][j] * tmp) > 0) ? (a[0][j] * tmp):(fabs(a[0][j]) * tmp);
+        }
+        b[i] -= (fabs(b[i]) * tmp);
+    }
+    printf("\nОтнял от всех строк: нулевую*|их ведущ.коэф.|\n");
+    for (i = 0; i < n; i++) {
+        for (j = 0; j < n - 1; j++) {
+            printf("%5.2lf ", a[i][j]);
+        }
+        printf("%5.2lf\n", b[i]);
+    }
 
 
     return 0;

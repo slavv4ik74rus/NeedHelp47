@@ -1,0 +1,22 @@
+from math import ceil as upround
+from Лаба2 import incPower
+
+# константы чаров
+start_en_big = 65
+end_en_big = 90
+start_en_little = 97
+end_en_little = 122
+start_ru_big = 1040
+end_ru_big = 1071
+start_ru_little = 1072
+end_ru_little = 1103
+minLenPass = 6
+maxLenPass = 12
+A = []
+incPower()  # изначально заполняем алфавит
+
+T = 1035000  # По заданию
+V = 10000000  # По заданию
+P = 10 ** (-4)  # По заданию
+L = 5  # Длина
+S = upround(V * T / P)  # Нижняя граница

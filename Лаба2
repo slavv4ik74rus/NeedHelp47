@@ -1,0 +1,51 @@
+import константы as con
+from random import choice as ch
+
+
+def incPower(level=1):  # увеличение алфавита
+    if level <= 4:  # есть 4 уровня добавление,если появится еще один уровень,то надо заменить эту "4"
+        if level == 1:  # добавляем маленькие английские
+            con.A += [chr(i) for i in range(con.start_en_little, con.end_en_little + 1)]
+        elif level == 2:  # добавляем большие английские
+            con.A = [chr(i) for i in range(con.start_en_big, con.end_en_big + 1)]
+        elif level == 3:  # добавляем маленькие русские
+            con.A += [chr(i) for i in range(con.start_ru_little, con.end_ru_little + 1)]
+        elif level == 4:  # добавляем большие русские
+            con.A += [chr(i) for i in range(con.start_ru_big, con.end_ru_big + 1)]
+        print(len(con.A))
+    else:
+        return False
+
+
+def setPowerLen():  # определяем длину и мощность генерируемого пароля
+    if con.maxLenPass < con.minLenPass:  # Проверяем чтобы Макс. и Мин. длины не конфликтовали
+        con.maxLenPass = con.minLenPass
+    if con.L < con.minLenPass:  # Пароль должен быть >= минимальной допустимой длине
+        con.L = con.minLenPass
+    if con.L > con.maxLenPass:  # Если длина > макс.допустимое . Длина = макс.допустимое
+        con.L = con.maxLenPass
+    lvlPower = 1
+    while con.S >= (len(con.A) ** con.L):  # Подгоняем длину под условие из задания [P*V/T] <=
+        if con.L <= con.maxLenPass:
+            con.L += 1
+        elif lvlPower <= 4:
+            if not incPower(lvlPower):
+                print("Невозможно создать такой пароль.")
+                exit()
+            lvlPower += 1
+
+
+def genPass():
+    password = ""
+    for i in range(con.L):
+        password += ch(con.A)
+    return password
+
+
+def main():
+    setPowerLen()
+    print(genPass())
+
+
+if __name__ == '__main__':
+    main()

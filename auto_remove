@@ -1,0 +1,80 @@
+import telnetlib
+import pymysql as db
+import logging
+import time
+import sys
+
+CONNECTION_RETRY_TIMEOUT = 30
+
+logger = logging.getLogger("")
+logger.setLevel(logging.DEBUG)
+file_handler = logging.FileHandler("logs/main.log", 'a', 'utf-8')
+file_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s - %(message)s'))
+logger.addHandler(file_handler)
+
+
+class Cursor:
+    def __init__(self, connection):
+        self._connection = connection
+
+    def __enter__(self):
+        self._cursor = self._connection.cursor()
+        return self._cursor
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self._cursor.close()
+
+
+def get_connection(host, user, password, database):
+    """
+    Подключение к БД
+    :param host: ip для подкл
+    :param user: имя пользователя
+    :param password: пароль пользователя
+    :param database: имя базы данных
+    :return: mysql.connect
+    """
+    try:
+        return db.connect(host, user, password, database, charset='utf8', )
+
+    except db.err.OperationalError as e:
+        logger.error(e)
+        return None
+
+
+def run_sql(connection, query):
+    with Cursor(connection) as cursor:
+        cursor.execute(query)
+        return cursor.fetchall()
+
+
+def remove_data(telnet, connection, db_name):
+    """
+    Надо найти файлы на удаление
+    """
+    table = run_sql(connection, 'select filename,path from '+db_name)
+    # telnet.write('del /Q ' + path+' \n')
+
+
+def main():
+    SW = {'SW1': {'telnet': None, 'host': None, 'user': None, 'pass': None, 'DB_name': None},
+          'SW2': {'telnet': None, 'host': None, 'user': None, 'pass': None, 'DB_name': None},
+          'SW3': {'telnet': None, 'host': None, 'user': None, 'pass': None, 'DB_name': None},
+          }
+
+    while True:
+        for i in range(1, 3):
+            tmp = 'SW' + str(i)
+            try:
+                remove_data(SW[tmp]['telnet'], get_connection(SW[tmp]['host'],
+                                                              SW[tmp]['user'],
+                                                              SW[tmp]['pass'],
+                                                              SW[tmp]['DB_name'],), SW[tmp]['DB_name'])
+            except Exception as e:
+                pass
+
+        time.sleep(30 * 60 * 2)
+
+
+if __name__ == '__main__':
+    main()
